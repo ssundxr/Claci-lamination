@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Board Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{--bg:#f6f6f4;--card:#fff;--text:#1a1a1a;--muted:#6b6b6b;--accent:#2f6fed;--line:#e3e3df;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121212;--card:#1e1e1e;--text:#f0f0f0;--muted:#9a9a9a;--accent:#6b9bff;--line:#333}}
+:root[data-theme="dark"]{--bg:#121212;--card:#1e1e1e;--text:#f0f0f0;--muted:#9a9a9a;--accent:#6b9bff;--line:#333}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:16px;max-width:520px;margin-inline:auto}
+h1{font-size:20px;margin:4px 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.full{grid-column:1/-1}
+label{font-size:12px;color:var(--muted);display:block;margin-bottom:4px}
+input{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--text);font-size:18px}
+.t{display:flex;justify-content:space-between;padding:5px 0;font-size:15px}
+.t span:first-child{color:var(--muted)}
+.big{font-size:24px;font-weight:700;border-top:1px solid var(--line);margin-top:6px;padding-top:10px}
+.big span:first-child{color:var(--text)}
+button{width:100%;background:transparent;color:var(--muted);border:0;padding:10px;font-size:15px}
+</style>
+</head>
+<body>
+<h1>Lamination Board Calculator</h1>
+
+<div class="card grid">
+  <div><label>Length (cm)</label><input id="l" type="number" inputmode="decimal" oninput="calc()"></div>
+  <div><label>Breadth (cm)</label><input id="b" type="number" inputmode="decimal" oninput="calc()"></div>
+  <div class="full"><label>Margin rate</label><input id="r" type="number" inputmode="decimal" oninput="calc()"></div>
+  <div class="full"><label>Total boards laminated</label><input id="n" type="number" inputmode="numeric" oninput="calc()"></div>
+</div>
+
+<div class="card">
+  <div class="t"><span>Length (inch)</span><span id="li">0</span></div>
+  <div class="t"><span>Breadth (inch)</span><span id="bi">0</span></div>
+  <div class="t"><span>Area (sq inch)</span><span id="a">0</span></div>
+  <div class="t"><span>Area ÷ 100</span><span id="a100">0</span></div>
+  <div class="t big"><span>Per board</span><span id="pb">₹0.00</span></div>
+  <div class="t big" style="border:0;margin:0;padding-top:4px"><span>Total</span><span id="tot">₹0.00</span></div>
+</div>
+<button onclick="clr()">Clear</button>
+
+<script>
+const $=id=>document.getElementById(id);
+const f=(n,d=2)=>n.toLocaleString("en-IN",{minimumFractionDigits:d,maximumFractionDigits:d});
+function calc(){
+  const l=parseFloat($("l").value)||0,b=parseFloat($("b").value)||0,
+        r=parseFloat($("r").value)||0,n=parseFloat($("n").value)||0;
+  const li=l/2.54,bi=b/2.54,a=li*bi,a100=a/100,pb=a100*r;
+  $("li").textContent=f(li);$("bi").textContent=f(bi);
+  $("a").textContent=f(a);$("a100").textContent=f(a100,4);
+  $("pb").textContent="₹"+f(pb);$("tot").textContent="₹"+f(pb*n);
+  try{localStorage.setItem("bc",JSON.stringify({r:$("r").value}))}catch(e){}
+}
+function clr(){["l","b","n"].forEach(i=>$(i).value="");calc()}
+try{const s=JSON.parse(localStorage.getItem("bc")||"null");if(s&&s.r)$("r").value=s.r}catch(e){}
+calc();
+</script>
+</body>
+</html>
